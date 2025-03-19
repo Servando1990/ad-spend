@@ -38,7 +38,7 @@ const LinearLandingPage: React.FC = () => {
       (function (C: CalWindow, A: string, L: string) { 
         let p = function (a: { q: any[] }, ar: any) { a.q.push(ar); }; 
         let d = C.document; 
-        C.Cal = C.Cal || function () { 
+        C.Cal = C.Cal || function (this: any) { 
           let cal = C.Cal; 
           let ar = arguments; 
           if (!cal.loaded) { 
