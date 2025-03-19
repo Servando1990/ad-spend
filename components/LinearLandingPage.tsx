@@ -4,6 +4,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, BarChart3, Zap, Star, CheckCircle2, ArrowUpRight } from 'lucide-react';
 import Head from 'next/head';
 
+interface CalWindow extends Window {
+  Cal?: {
+    ns?: {
+      [key: string]: any;
+    };
+    loaded?: boolean;
+    q?: any[];
+  };
+}
+
 const LinearLandingPage: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const calInitialized = useRef(false);
@@ -24,9 +34,9 @@ const LinearLandingPage: React.FC = () => {
     if (typeof window !== 'undefined' && !calInitialized.current) {
       calInitialized.current = true;
       
-      // Cal.com initialization
-      (function (C, A, L) { 
-        let p = function (a, ar) { a.q.push(ar); }; 
+      // Cal.com initialization with proper types
+      (function (C: CalWindow, A: string, L: string) { 
+        let p = function (a: { q: any[] }, ar: any) { a.q.push(ar); }; 
         let d = C.document; 
         C.Cal = C.Cal || function () { 
           let cal = C.Cal; 
@@ -50,10 +60,10 @@ const LinearLandingPage: React.FC = () => {
           } 
           p(cal, ar); 
         }; 
-      })(window, "https://app.cal.com/embed/embed.js", "init");
+      })(window as CalWindow, "https://app.cal.com/embed/embed.js", "init");
       
-      // Initialize Cal
-      (window as any).Cal("init", "30min", {origin:"https://cal.com"});
+      // Initialize Cal with proper type casting
+      (window as CalWindow).Cal?.("init", "30min", {origin:"https://cal.com"});
     }
   }, []);
 
@@ -61,13 +71,14 @@ const LinearLandingPage: React.FC = () => {
   useEffect(() => {
     // Wait for Cal.com to be fully loaded
     const initializeCalInline = () => {
-      if (typeof window !== 'undefined' && window.Cal && window.Cal.ns && window.Cal.ns["30min"]) {
-        window.Cal.ns["30min"]("inline", {
+      const calWindow = window as CalWindow;
+      if (typeof window !== 'undefined' && calWindow.Cal?.ns?.["30min"]) {
+        calWindow.Cal.ns["30min"]("inline", {
           elementOrSelector: "#my-cal-inline",
           config: {"layout":"month_view","theme":"dark"},
           calLink: "servando-torres-garcia-qco7rh/30min",
         });
-        window.Cal.ns["30min"]("ui", {"theme":"dark","hideEventTypeDetails":false,"layout":"month_view"});
+        calWindow.Cal.ns["30min"]("ui", {"theme":"dark","hideEventTypeDetails":false,"layout":"month_view"});
         return true;
       }
       return false;
@@ -99,13 +110,13 @@ const LinearLandingPage: React.FC = () => {
     <>
       <Head>
         <title>LeadValueAI - Optimize Ad Spend with AI-Driven Lead Value</title>
-        <meta name="description" content="Stop wasting budget on low-value leads. Our machine learning solution analyzes your data to predict lead value and optimize your Google Ads campaigns in real-time." />
+        <meta name="description" content="AI-powered lead value prediction. Stop optimizing for CPA when ROAS is what matters." />
       </Head>
       <div className="bg-zinc-950 text-zinc-200 min-h-screen font-sans antialiased">
         {/* Header */}
         <header className={`fixed top-0 w-full ${scrolled ? 'bg-zinc-950/80 backdrop-blur-lg' : 'bg-transparent'} transition-all duration-200 z-50`}>
           <div className="max-w-5xl mx-auto flex items-center justify-between p-4 lg:px-0">
-            <div className="text-white font-medium text-lg">LeadValueAI</div>
+            <div className="text-white font-medium text-lg">LeadValueAI by <a href="https://www.controlthrive.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">controlthrive</a></div>
             <div className="flex items-center gap-6">
               <a href="#how-it-works" className="text-zinc-400 hover:text-white text-sm transition-colors">How it works</a>
               <a href="#pricing" className="text-zinc-400 hover:text-white text-sm transition-colors">Pricing</a>
@@ -136,14 +147,14 @@ const LinearLandingPage: React.FC = () => {
                 Focus On ROAS.
               </h1>
               <p className="text-zinc-400 text-xl mb-8 leading-relaxed">
-                Stop wasting budget on low-value leads. Our machine learning solution analyzes your data to predict lead value and optimize your Google Ads campaigns in real-time.
+                AI-powered lead value prediction. Stop optimizing for CPA when ROAS is what matters.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <button 
                   onClick={scrollToCalendar}
                   className="inline-flex items-center justify-center bg-white hover:bg-zinc-200 text-black font-medium rounded-lg px-6 py-3 transition-colors"
                 >
-                  Book a demo
+                  Book a call
                   <ArrowRight size={16} className="ml-2" />
                 </button>
                 <a href="#learn-more" className="inline-flex items-center justify-center border border-zinc-800 hover:border-zinc-700 rounded-lg px-6 py-3 transition-colors">
@@ -424,40 +435,6 @@ const LinearLandingPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Team */}
-        <section className="py-20 border-t border-zinc-900">
-          <div className="max-w-5xl mx-auto px-4 lg:px-0">
-            <div className="mb-12">
-              <span className="text-zinc-500 text-sm font-medium uppercase tracking-wider">Our team</span>
-              <h2 className="text-3xl font-bold text-white mt-2">Expert implementation partners</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="group">
-                <div className="h-64 bg-zinc-900 rounded-lg mb-4 overflow-hidden">
-                  <img src="/api/placeholder/320/256" alt="Servando Torres García" className="w-full h-full object-cover" />
-                </div>
-                <h3 className="text-white text-lg font-medium">Servando Torres García</h3>
-                <p className="text-zinc-500 text-sm">Strategy & Implementation</p>
-              </div>
-              <div className="group">
-                <div className="h-64 bg-zinc-900 rounded-lg mb-4 overflow-hidden">
-                  <img src="/api/placeholder/320/256" alt="Ángel de Jaén" className="w-full h-full object-cover" />
-                </div>
-                <h3 className="text-white text-lg font-medium">Ángel de Jaén</h3>
-                <p className="text-zinc-500 text-sm">Machine Learning Engineer</p>
-              </div>
-              <div className="group">
-                <div className="h-64 bg-zinc-900 rounded-lg mb-4 overflow-hidden">
-                  <img src="/api/placeholder/320/256" alt="David Loris" className="w-full h-full object-cover" />
-                </div>
-                <h3 className="text-white text-lg font-medium">David Loris</h3>
-                <p className="text-zinc-500 text-sm">Marketing Analytics</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Cal.com Section */}
         <section id="calendar" className="py-20 border-t border-zinc-900">
           <div className="max-w-5xl mx-auto px-4 lg:px-0">
@@ -487,8 +464,8 @@ const LinearLandingPage: React.FC = () => {
               <div className="flex gap-6">
                 <a href="#" className="text-zinc-500 hover:text-white text-sm transition-colors">Privacy</a>
                 <a href="#" className="text-zinc-500 hover:text-white text-sm transition-colors">Terms</a>
-                <a href="mailto:contact@leadvalueai.com" className="text-zinc-500 hover:text-white text-sm transition-colors">
-                  contact@leadvalueai.com
+                <a href="mailto:servando@controlthrive.com" className="text-zinc-500 hover:text-white text-sm transition-colors">
+                  servando@controlthrive.com
                 </a>
               </div>
             </div>
